@@ -141,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: AppSpacing.paddingLg,
         children: [
-          // 🎨 Appearance
+          // Appearance
           _buildSectionHeader(context, 'Appearance'),
           Container(
             decoration: AppCardDecoration.surface(context),
@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 32),
 
-          // 🔐 Security
+          // Security
           _buildSectionHeader(context, 'Security'),
           Container(
             decoration: AppCardDecoration.surface(context),
@@ -210,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 32),
 
-          // 💾 Data Management
+          // Data Management
           _buildSectionHeader(context, 'Data Management'),
           Container(
             decoration: AppCardDecoration.surface(context),
@@ -239,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 32),
 
-          // 🔒 Privacy
+          // Privacy
           _buildSectionHeader(context, 'Privacy & About'),
           Container(
             decoration: AppCardDecoration.surface(context),
