@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:smartcache/models/income.dart';
 import 'package:provider/provider.dart';
 import 'package:smartcache/providers/income_provider.dart';
+import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
 import 'package:smartcache/constants/income_categories.dart';
 
@@ -21,7 +22,7 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
 
-  String _selectedCategory = IncomeCategory.all.first;
+  String? _selectedCategory;
   DateTime _selectedDate = DateTime.now();
 
   bool get _isEditing => widget.income != null;
@@ -35,6 +36,18 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
       _noteController.text = i.note;
       _selectedCategory = i.category;
       _selectedDate = i.incomeDate;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_selectedCategory == null) {
+      if (_isEditing) {
+        _selectedCategory = widget.income!.category;
+      } else {
+        _selectedCategory = context.read<CategoryProvider>().incomeCategories.first;
+      }
     }
   }
 
@@ -66,14 +79,14 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
     if (_isEditing) {
       success = await incomeProvider.updateIncome(
         id: widget.income!.id,
-        category: _selectedCategory,
+        category: _selectedCategory!,
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         incomeDate: _selectedDate,
       );
     } else {
       success = await incomeProvider.addIncome(
-        category: _selectedCategory,
+        category: _selectedCategory!,
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         incomeDate: _selectedDate,
@@ -172,8 +185,14 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
                   labelText: 'Income Category',
                   prefixIcon: Icon(FluentIcons.tag_24_regular),
                 ),
-                items: IncomeCategory.all.map((category) {
-                  return DropdownMenuItem(
+                items: () {
+                  final providerCats = context.read<CategoryProvider>().incomeCategories;
+                  final categories = [...providerCats];
+                  if (_selectedCategory != null && !categories.contains(_selectedCategory)) {
+                    categories.add(_selectedCategory!);
+                  }
+                  return categories.map((category) {
+                    return DropdownMenuItem(
                     value: category,
                     child: Row(
                       children: [
@@ -183,8 +202,9 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
                       ],
                     ),
                   );
-                }).toList(),
-                onChanged: (value) {
+                }).toList();
+              }(),
+              onChanged: (value) {
                   if (value != null) setState(() => _selectedCategory = value);
                 },
               ),

@@ -5,6 +5,7 @@ import 'package:smartcache/models/expense.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:smartcache/providers/expense_provider.dart';
+import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
 
 class AddExpenseSheet extends StatefulWidget {
@@ -21,7 +22,7 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
 
-  String _selectedCategory = ExpenseCategory.all.first;
+  String? _selectedCategory;
   String _selectedPaymentMethod = PaymentMethod.cash;
   DateTime _selectedDate = DateTime.now();
 
@@ -37,6 +38,18 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
       _selectedCategory = e.category;
       _selectedPaymentMethod = e.paymentMethod;
       _selectedDate = e.expenseDate;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_selectedCategory == null) {
+      if (_isEditing) {
+        _selectedCategory = widget.expense!.category;
+      } else {
+        _selectedCategory = context.read<CategoryProvider>().expenseCategories.first;
+      }
     }
   }
 
@@ -68,7 +81,7 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
     if (_isEditing) {
       success = await expenseProvider.updateExpense(
         id: widget.expense!.id,
-        category: _selectedCategory,
+        category: _selectedCategory!,
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         paymentMethod: _selectedPaymentMethod,
@@ -76,7 +89,7 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
       );
     } else {
       success = await expenseProvider.addExpense(
-        category: _selectedCategory,
+        category: _selectedCategory!,
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         paymentMethod: _selectedPaymentMethod,
@@ -171,7 +184,13 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
                   labelText: 'Category',
                   prefixIcon: Icon(FluentIcons.tag_24_regular),
                 ),
-                items: ExpenseCategory.all.map((category) {
+                items: () {
+                  final providerCats = context.read<CategoryProvider>().expenseCategories;
+                  final categories = [...providerCats];
+                  if (_selectedCategory != null && !categories.contains(_selectedCategory)) {
+                    categories.add(_selectedCategory!);
+                  }
+                  return categories.map((category) {
                   return DropdownMenuItem(
                     value: category,
                     child: Row(
@@ -182,8 +201,9 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
                       ],
                     ),
                   );
-                }).toList(),
-                onChanged: (value) {
+                }).toList();
+              }(),
+              onChanged: (value) {
                   if (value != null) setState(() => _selectedCategory = value);
                 },
               ),

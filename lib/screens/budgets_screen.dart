@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:smartcache/providers/budget_provider.dart';
 import 'package:smartcache/providers/expense_provider.dart';
+import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
 import 'package:smartcache/models/budget.dart';
 
@@ -147,7 +148,7 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
   final _formKey = GlobalKey<FormState>();
   final _limitController = TextEditingController();
 
-  String _selectedCategory = ExpenseCategory.all.first;
+  String? _selectedCategory;
   int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
 
@@ -162,6 +163,18 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
       _selectedCategory = b.category;
       _selectedMonth = b.month;
       _selectedYear = b.year;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_selectedCategory == null) {
+      if (_isEditing) {
+        _selectedCategory = widget.budget!.category;
+      } else {
+        _selectedCategory = context.read<CategoryProvider>().expenseCategories.first;
+      }
     }
   }
 
@@ -240,25 +253,29 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
               // Category
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                // Disable category/month/year editing if editing existing budget?
-                // Usually user might want to change it, but it might create a new budget if unique constraint exists.
-                // For simplicity, let them change it. It acts as "Upsert".
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(FluentIcons.tag_24_regular),
                 ),
-                items: ExpenseCategory.all.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Row(
-                      children: [
-                        Icon(ExpenseCategory.getIcon(category), size: 20),
-                        const SizedBox(width: 12),
-                        Text(category),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                items: () {
+                  final providerCats = context.read<CategoryProvider>().expenseCategories;
+                  final categories = [...providerCats];
+                  if (_selectedCategory != null && !categories.contains(_selectedCategory)) {
+                    categories.add(_selectedCategory!);
+                  }
+                  return categories.map((category) {
+                    return DropdownMenuItem(
+                      value: category,
+                      child: Row(
+                        children: [
+                          Icon(ExpenseCategory.getIcon(category), size: 20),
+                          const SizedBox(width: 12),
+                          Text(category),
+                        ],
+                      ),
+                    );
+                  }).toList();
+                }(),
                 onChanged: (value) {
                   if (value != null) setState(() => _selectedCategory = value);
                 },

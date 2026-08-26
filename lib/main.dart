@@ -10,6 +10,7 @@ import 'package:smartcache/providers/expense_provider.dart';
 import 'package:smartcache/providers/budget_provider.dart';
 import 'package:smartcache/providers/income_provider.dart';
 import 'package:smartcache/providers/user_provider.dart';
+import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
 import 'package:smartcache/services/local_storage_service.dart';
 import 'package:smartcache/widgets/app_lifecycle_observer.dart';
@@ -68,6 +69,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CategoryProvider(),
         ),
       ],
       child: Consumer<ThemeProvider>(

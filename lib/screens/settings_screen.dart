@@ -10,6 +10,7 @@ import 'package:smartcache/services/expense_service.dart';
 import 'package:smartcache/services/income_service.dart';
 import 'package:smartcache/services/export_service.dart';
 import 'package:smartcache/providers/theme_provider.dart';
+import 'package:smartcache/screens/manage_categories_screen.dart';
 
 import '../theme.dart';
 
@@ -205,6 +206,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               activeColor: theme.colorScheme.primary,
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Categories
+          _buildSectionHeader(context, 'Categories'),
+          Container(
+            decoration: AppCardDecoration.surface(context),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    FluentIcons.tag_24_regular,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  title: Text('Expense Categories', style: context.textStyles.bodyLarge),
+                  trailing: Icon(
+                    FluentIcons.chevron_right_24_regular,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ManageCategoriesScreen(isExpense: true),
+                      ),
+                    );
+                  },
+                ),
+                Divider(height: 1, color: theme.dividerColor.withOpacity(0.3)),
+                ListTile(
+                  leading: Icon(
+                    FluentIcons.money_24_regular,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  title: Text('Income Categories', style: context.textStyles.bodyLarge),
+                  trailing: Icon(
+                    FluentIcons.chevron_right_24_regular,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ManageCategoriesScreen(isExpense: false),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
 

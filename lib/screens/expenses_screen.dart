@@ -4,6 +4,7 @@ import 'package:smartcache/constants/cartegories.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:smartcache/providers/expense_provider.dart';
+import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
 import 'package:smartcache/widgets/add_expense_sheet.dart';
 
@@ -573,14 +574,21 @@ class _FilterSheetState extends State<FilterSheet> {
                   selected: _selectedCategory == null,
                   onSelected: (_) => setState(() => _selectedCategory = null),
                 ),
-                ...ExpenseCategory.all.map((category) {
-                  return ChoiceChip(
-                    label: Text(category),
-                    selected: _selectedCategory == category,
-                    onSelected: (_) =>
-                        setState(() => _selectedCategory = category),
-                  );
-                }),
+                ...() {
+                  final providerCats = context.watch<CategoryProvider>().expenseCategories;
+                  final categories = [...providerCats];
+                  if (_selectedCategory != null && !categories.contains(_selectedCategory)) {
+                    categories.add(_selectedCategory!);
+                  }
+                  return categories.map((category) {
+                    return ChoiceChip(
+                      label: Text(category),
+                      selected: _selectedCategory == category,
+                      onSelected: (_) =>
+                          setState(() => _selectedCategory = category),
+                    );
+                  }).toList();
+                }(),
               ],
             ),
             const SizedBox(height: 24),
