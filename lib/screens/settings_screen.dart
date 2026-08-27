@@ -135,6 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: const Text('Settings'),
         centerTitle: false,

@@ -23,6 +23,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
     final incomeProvider = context.watch<IncomeProvider>();
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: const Text('Income'),
         actions: [

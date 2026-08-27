@@ -131,7 +131,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         : 0.0;
 
     return Scaffold(
+      extendBody: true,
       body: SafeArea(
+        bottom: false,
         child: RefreshIndicator(
           onRefresh: _loadData,
           child: SingleChildScrollView(
@@ -295,10 +297,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
 
-      floatingActionButton: SpeedDial(
-        icon: FluentIcons.add_24_filled,
-        activeIcon: FluentIcons.dismiss_24_filled,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 5.0), // Push above the floating pill
+        child: SpeedDial(
+          icon: FluentIcons.add_24_filled,
+          activeIcon: FluentIcons.dismiss_24_filled,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         spacing: 12,
         spaceBetweenChildren: 8,
@@ -331,6 +335,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
         ],
+      ),
       ),
     );
   }

@@ -107,6 +107,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
@@ -114,16 +115,21 @@ class _MainNavigationState extends State<MainNavigation> {
         },
         children: _screens,
       ),
-      bottomNavigationBar: SafeArea(
+      bottomNavigationBar: Container(
+        color: Colors.transparent,
         child: Container(
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          margin: EdgeInsets.fromLTRB(8, 0, 8, 8 + MediaQuery.of(context).padding.bottom),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.1),
+              width: 1.0,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 5),
               ),
@@ -198,7 +204,7 @@ class _MainNavigationState extends State<MainNavigation> {
           }),
         ),
       ),
-    ),
+      ),
     );
   }
 }

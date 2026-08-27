@@ -27,6 +27,7 @@ class BudgetsScreen extends StatelessWidget {
         .toList();
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: const Text('Budgets'),
         actions: [

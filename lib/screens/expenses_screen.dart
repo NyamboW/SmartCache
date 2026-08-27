@@ -23,6 +23,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final expenseProvider = context.watch<ExpenseProvider>();
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: const Text('Expenses'),
         actions: [
