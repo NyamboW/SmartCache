@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:excel/excel.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:smartcache/models/budget.dart';
@@ -44,27 +46,65 @@ class ExportService {
         excel.delete('Sheet1');
       }
 
-      // 4. Save and Share
+      // 4. Save and Share Options
+      bool? saveToDevice = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Export Options'),
+            content: const Text('How would you like to export your data?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Share File'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Save to Device'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (saveToDevice == null) return; // User cancelled
+
       final fileBytes = excel.save();
       if (fileBytes == null) {
         throw Exception("Failed to generate Excel file");
       }
 
-      final directory = await getTemporaryDirectory();
       final dateStr = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final fileName = 'smartcache_export_$dateStr.xlsx';
-      final filePath = '${directory.path}/$fileName';
+      final fileName = 'smartcache_export_$dateStr';
 
-      final file = File(filePath);
-      await file.writeAsBytes(fileBytes);
+      if (saveToDevice) {
+        final bytes = Uint8List.fromList(fileBytes);
+        final path = await FileSaver.instance.saveFile(
+          name: fileName,
+          bytes: bytes,
+          fileExtension: 'xlsx',
+          mimeType: MimeType.microsoftExcel,
+        );
+        if (context.mounted && path.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('File saved to $path')),
+          );
+        }
+      } else {
+        // Share
+        final directory = await getTemporaryDirectory();
+        final filePath = '${directory.path}/$fileName.xlsx';
 
-      // Share
-      final result = await Share.shareXFiles([
-        XFile(filePath),
-      ], text: 'Here is your SmartCache financial data export.');
+        final file = File(filePath);
+        await file.writeAsBytes(fileBytes);
 
-      if (result.status == ShareResultStatus.dismissed) {
-        debugPrint('Share dismissed');
+        final result = await Share.shareXFiles([
+          XFile(filePath),
+        ], text: 'Here is your SmartCache financial data export.');
+
+        if (result.status == ShareResultStatus.dismissed) {
+          debugPrint('Share dismissed');
+        }
       }
     } catch (e) {
       debugPrint('Export error: $e');
@@ -87,7 +127,11 @@ class ExportService {
       'Amount',
       'Payment Method',
       'Note',
+      'Is Recurring',
+      'Recurrence Interval',
+      'Next Recurrence Date',
       'Created At',
+      'Updated At',
     ];
     sheet.appendRow(headers.map((h) => TextCellValue(h)).toList());
 
@@ -100,7 +144,11 @@ class ExportService {
         DoubleCellValue(income.amount),
         TextCellValue(income.paymentMethod),
         TextCellValue(income.note),
+        TextCellValue(income.isRecurring ? 'Yes' : 'No'),
+        TextCellValue(income.recurrenceInterval ?? ''),
+        TextCellValue(income.nextRecurrenceDate != null ? DateFormat('yyyy-MM-dd').format(income.nextRecurrenceDate!) : ''),
         TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(income.createdAt)),
+        TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(income.updatedAt)),
       ];
       sheet.appendRow(row);
     }
@@ -117,7 +165,11 @@ class ExportService {
       'Amount',
       'Payment Method',
       'Note',
+      'Is Recurring',
+      'Recurrence Interval',
+      'Next Recurrence Date',
       'Created At',
+      'Updated At',
     ];
     sheet.appendRow(headers.map((h) => TextCellValue(h)).toList());
 
@@ -130,7 +182,11 @@ class ExportService {
         DoubleCellValue(expense.amount),
         TextCellValue(expense.paymentMethod),
         TextCellValue(expense.note),
+        TextCellValue(expense.isRecurring ? 'Yes' : 'No'),
+        TextCellValue(expense.recurrenceInterval ?? ''),
+        TextCellValue(expense.nextRecurrenceDate != null ? DateFormat('yyyy-MM-dd').format(expense.nextRecurrenceDate!) : ''),
         TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(expense.createdAt)),
+        TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(expense.updatedAt)),
       ];
       sheet.appendRow(row);
     }
@@ -146,6 +202,7 @@ class ExportService {
       'Category',
       'Limit Amount',
       'Created At',
+      'Updated At',
     ];
     sheet.appendRow(headers.map((h) => TextCellValue(h)).toList());
 
@@ -159,6 +216,7 @@ class ExportService {
         TextCellValue(budget.category),
         DoubleCellValue(budget.limitAmount),
         TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(budget.createdAt)),
+        TextCellValue(DateFormat('yyyy-MM-dd HH:mm').format(budget.updatedAt)),
       ];
       sheet.appendRow(row);
     }
