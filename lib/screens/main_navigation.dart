@@ -10,6 +10,18 @@ import 'package:smartcache/screens/expenses_screen.dart';
 import 'package:smartcache/screens/budgets_screen.dart';
 
 
+class _NavItem {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+
+  const _NavItem({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+  });
+}
+
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -28,6 +40,34 @@ class _MainNavigationState extends State<MainNavigation> {
     BudgetsScreen(),
     //ProfileScreen(),
     SettingsScreen(),
+  ];
+
+  final List<_NavItem> _navItems = const [
+    _NavItem(
+      icon: FluentIcons.home_24_regular,
+      selectedIcon: FluentIcons.home_24_filled,
+      label: 'Home',
+    ),
+    _NavItem(
+      icon: FluentIcons.receipt_24_regular,
+      selectedIcon: FluentIcons.receipt_24_filled,
+      label: 'Expenses',
+    ),
+    _NavItem(
+      icon: FluentIcons.money_24_regular,
+      selectedIcon: FluentIcons.money_24_filled,
+      label: 'Income',
+    ),
+    _NavItem(
+      icon: FluentIcons.chart_multiple_24_regular,
+      selectedIcon: FluentIcons.chart_multiple_24_filled,
+      label: 'Budgets',
+    ),
+    _NavItem(
+      icon: FluentIcons.settings_24_regular,
+      selectedIcon: FluentIcons.settings_24_filled,
+      label: 'Settings',
+    ),
   ];
 
   @override
@@ -66,46 +106,82 @@ class _MainNavigationState extends State<MainNavigation> {
         },
         children: _screens,
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(FluentIcons.home_24_regular),
-            selectedIcon: Icon(FluentIcons.home_24_filled),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(FluentIcons.receipt_24_regular),
-            selectedIcon: Icon(FluentIcons.receipt_24_filled),
-            label: 'Expenses',
-          ),
+      bottomNavigationBar: Container(
+        color: Theme.of(context).colorScheme.surface,
+        padding: EdgeInsets.only(
+          left: 8,
+          right: 8,
+          top: 12,
+          bottom: MediaQuery.of(context).padding.bottom + 12,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(_navItems.length, (index) {
+            final isSelected = _currentIndex == index;
+            final item = _navItems[index];
+            final colorScheme = Theme.of(context).colorScheme;
 
-          //add Income Screen
-          NavigationDestination(
-            icon: Icon(FluentIcons.money_24_regular),
-            selectedIcon: Icon(FluentIcons.money_24_filled),
-            label: 'Income',
-          ),
-
-          NavigationDestination(
-            icon: Icon(FluentIcons.chart_multiple_24_regular),
-            selectedIcon: Icon(FluentIcons.chart_multiple_24_filled),
-            label: 'Budgets',
-          ),
-          NavigationDestination(
-            icon: Icon(FluentIcons.settings_24_regular),
-            selectedIcon: Icon(FluentIcons.settings_24_filled),
-            label: 'Settings',
-          ),
-        ],
+            return GestureDetector(
+              onTap: () {
+                setState(() => _currentIndex = index);
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 48,
+                padding: isSelected
+                    ? const EdgeInsets.only(left: 6, right: 16, top: 6, bottom: 6)
+                    : const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected 
+                      ? colorScheme.secondaryContainer 
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: isSelected ? 36 : 24,
+                        height: isSelected ? 36 : 24,
+                        decoration: BoxDecoration(
+                          color: isSelected ? colorScheme.primary : Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            isSelected ? item.selectedIcon : item.icon,
+                            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      if (isSelected) ...[
+                        const SizedBox(width: 8),
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            color: colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
