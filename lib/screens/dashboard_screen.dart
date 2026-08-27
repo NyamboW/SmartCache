@@ -94,8 +94,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final expenseProvider = context.read<ExpenseProvider>();
     final incomeProvider = context.read<IncomeProvider>();
 
-    expenseProvider.setFilters(startDate: startDate, endDate: endDate);
-    incomeProvider.setFilters(startDate: startDate, endDate: endDate);
+    expenseProvider.setFilters(
+      startDate: startDate, 
+      endDate: endDate,
+      category: expenseProvider.selectedCategory,
+      paymentMethod: expenseProvider.selectedPaymentMethod,
+    );
+    incomeProvider.setFilters(
+      startDate: startDate, 
+      endDate: endDate,
+      category: incomeProvider.selectedCategory,
+    );
   }
 
   @override

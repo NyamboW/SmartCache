@@ -16,14 +16,7 @@ class IncomeScreen extends StatefulWidget {
 }
 
 class _IncomeScreenState extends State<IncomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Clear any filters that may have been set by the dashboard
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<IncomeProvider>().clearFilters();
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -16,14 +16,7 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Clear any filters that may have been set by the dashboard
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ExpenseProvider>().clearFilters();
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
