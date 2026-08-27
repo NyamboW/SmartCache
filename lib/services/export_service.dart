@@ -79,13 +79,13 @@ class ExportService {
 
       if (saveToDevice) {
         final bytes = Uint8List.fromList(fileBytes);
-        final path = await FileSaver.instance.saveFile(
+        final path = await FileSaver.instance.saveAs(
           name: fileName,
           bytes: bytes,
           fileExtension: 'xlsx',
           mimeType: MimeType.microsoftExcel,
         );
-        if (context.mounted && path.isNotEmpty) {
+        if (context.mounted && path != null && path.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('File saved to $path')),
           );
