@@ -22,6 +22,12 @@ class Income {
   final DateTime createdAt;
   @HiveField(8)
   final DateTime updatedAt;
+  @HiveField(9)
+  final bool isRecurring;
+  @HiveField(10)
+  final String? recurrenceInterval;
+  @HiveField(11)
+  final DateTime? nextRecurrenceDate;
 
   Income({
     required this.id,
@@ -33,6 +39,9 @@ class Income {
     required this.incomeDate,
     required this.createdAt,
     required this.updatedAt,
+    this.isRecurring = false,
+    this.recurrenceInterval,
+    this.nextRecurrenceDate,
   });
 
   factory Income.fromJson(Map<String, dynamic> json) => Income(
@@ -49,6 +58,11 @@ class Income {
     updatedAt: json['updated_at'] != null
         ? DateTime.parse(json['updated_at'] as String)
         : DateTime.now(),
+    isRecurring: json['is_recurring'] as bool? ?? false,
+    recurrenceInterval: json['recurrence_interval'] as String?,
+    nextRecurrenceDate: json['next_recurrence_date'] != null 
+        ? DateTime.parse(json['next_recurrence_date'] as String) 
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -61,6 +75,9 @@ class Income {
     'income_date': incomeDate.toIso8601String(),
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
+    'is_recurring': isRecurring,
+    'recurrence_interval': recurrenceInterval,
+    'next_recurrence_date': nextRecurrenceDate?.toIso8601String(),
   };
 
   Income copyWith({
@@ -73,6 +90,9 @@ class Income {
     DateTime? incomeDate,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isRecurring,
+    String? recurrenceInterval,
+    DateTime? nextRecurrenceDate,
   }) => Income(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -83,5 +103,8 @@ class Income {
     incomeDate: incomeDate ?? this.incomeDate,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    isRecurring: isRecurring ?? this.isRecurring,
+    recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
+    nextRecurrenceDate: nextRecurrenceDate ?? this.nextRecurrenceDate,
   );
 }

@@ -24,6 +24,10 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
 
   String? _selectedCategory;
   DateTime _selectedDate = DateTime.now();
+  bool _isRecurring = false;
+  String _recurrenceInterval = 'monthly';
+
+  final List<String> _recurrenceOptions = ['daily', 'weekly', 'monthly', 'yearly'];
 
   bool get _isEditing => widget.income != null;
 
@@ -36,6 +40,8 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
       _noteController.text = i.note;
       _selectedCategory = i.category;
       _selectedDate = i.incomeDate;
+      _isRecurring = i.isRecurring;
+      _recurrenceInterval = i.recurrenceInterval ?? 'monthly';
     }
   }
 
@@ -83,6 +89,8 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         incomeDate: _selectedDate,
+        isRecurring: _isRecurring,
+        recurrenceInterval: _isRecurring ? _recurrenceInterval : null,
       );
     } else {
       success = await incomeProvider.addIncome(
@@ -90,6 +98,8 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
         amount: double.parse(_amountController.text),
         note: _noteController.text,
         incomeDate: _selectedDate,
+        isRecurring: _isRecurring,
+        recurrenceInterval: _isRecurring ? _recurrenceInterval : null,
       );
     }
 
@@ -228,7 +238,35 @@ class _AddIncomeSheetState extends State<AddIncomeSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-
+              SwitchListTile(
+                title: const Text('Recurring Income'),
+                subtitle: Text(_isRecurring ? 'Repeats $_recurrenceInterval' : 'One-time income'),
+                value: _isRecurring,
+                onChanged: (val) => setState(() => _isRecurring = val),
+                secondary: const Icon(FluentIcons.arrow_repeat_all_24_regular),
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (_isRecurring) ...[
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: _recurrenceInterval,
+                  decoration: const InputDecoration(
+                    labelText: 'Repeat Interval',
+                    prefixIcon: Icon(FluentIcons.calendar_clock_24_regular),
+                  ),
+                  items: _recurrenceOptions.map((interval) {
+                    return DropdownMenuItem(
+                      value: interval,
+                      child: Text(interval[0].toUpperCase() + interval.substring(1)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) setState(() => _recurrenceInterval = value);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+              
               // NOTE
               TextFormField(
                 controller: _noteController,

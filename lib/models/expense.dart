@@ -22,6 +22,12 @@ class Expense {
   final DateTime createdAt;
   @HiveField(8)
   final DateTime updatedAt;
+  @HiveField(9)
+  final bool isRecurring;
+  @HiveField(10)
+  final String? recurrenceInterval;
+  @HiveField(11)
+  final DateTime? nextRecurrenceDate;
 
   Expense({
     required this.id,
@@ -33,6 +39,9 @@ class Expense {
     required this.expenseDate,
     required this.createdAt,
     required this.updatedAt,
+    this.isRecurring = false,
+    this.recurrenceInterval,
+    this.nextRecurrenceDate,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) => Expense(
@@ -45,6 +54,11 @@ class Expense {
     expenseDate: DateTime.parse(json['expense_date'] as String),
     createdAt: DateTime.parse(json['created_at'] as String),
     updatedAt: DateTime.parse(json['updated_at'] as String),
+    isRecurring: json['is_recurring'] as bool? ?? false,
+    recurrenceInterval: json['recurrence_interval'] as String?,
+    nextRecurrenceDate: json['next_recurrence_date'] != null 
+        ? DateTime.parse(json['next_recurrence_date'] as String) 
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +71,9 @@ class Expense {
     'expense_date': expenseDate.toIso8601String(),
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
+    'is_recurring': isRecurring,
+    'recurrence_interval': recurrenceInterval,
+    'next_recurrence_date': nextRecurrenceDate?.toIso8601String(),
   };
 
   Expense copyWith({
@@ -69,6 +86,9 @@ class Expense {
     DateTime? expenseDate,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isRecurring,
+    String? recurrenceInterval,
+    DateTime? nextRecurrenceDate,
   }) => Expense(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -79,5 +99,8 @@ class Expense {
     expenseDate: expenseDate ?? this.expenseDate,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    isRecurring: isRecurring ?? this.isRecurring,
+    recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
+    nextRecurrenceDate: nextRecurrenceDate ?? this.nextRecurrenceDate,
   );
 }

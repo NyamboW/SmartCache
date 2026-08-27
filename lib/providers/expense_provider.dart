@@ -111,6 +111,7 @@ class ExpenseProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      await _expenseService.processRecurrences();
       _expenses = await _expenseService.getExpenses();
       _isLoading = false;
       notifyListeners();
@@ -127,6 +128,8 @@ class ExpenseProvider with ChangeNotifier {
     required String note,
     required String paymentMethod,
     required DateTime expenseDate,
+    bool isRecurring = false,
+    String? recurrenceInterval,
   }) async {
     _errorMessage = null;
 
@@ -137,6 +140,8 @@ class ExpenseProvider with ChangeNotifier {
         note: note,
         paymentMethod: paymentMethod,
         expenseDate: expenseDate,
+        isRecurring: isRecurring,
+        recurrenceInterval: recurrenceInterval,
       );
 
       if (expense != null) {
@@ -162,6 +167,8 @@ class ExpenseProvider with ChangeNotifier {
     String? note,
     String? paymentMethod,
     DateTime? expenseDate,
+    bool? isRecurring,
+    String? recurrenceInterval,
   }) async {
     _errorMessage = null;
 
@@ -173,6 +180,8 @@ class ExpenseProvider with ChangeNotifier {
         note: note,
         paymentMethod: paymentMethod,
         expenseDate: expenseDate,
+        isRecurring: isRecurring,
+        recurrenceInterval: recurrenceInterval,
       );
 
       if (updatedExpense != null) {

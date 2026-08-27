@@ -73,6 +73,7 @@ class IncomeProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      await _incomeService.processRecurrences();
       _incomes = await _incomeService.getIncome();
     } catch (e) {
       _errorMessage = 'Failed to load incomes';
@@ -88,6 +89,8 @@ class IncomeProvider with ChangeNotifier {
     required double amount,
     required String note,
     required DateTime incomeDate,
+    bool isRecurring = false,
+    String? recurrenceInterval,
   }) async {
     _errorMessage = null;
 
@@ -97,6 +100,8 @@ class IncomeProvider with ChangeNotifier {
         amount: amount,
         note: note,
         incomeDate: incomeDate,
+        isRecurring: isRecurring,
+        recurrenceInterval: recurrenceInterval,
       );
 
       if (income != null) {
@@ -122,6 +127,8 @@ class IncomeProvider with ChangeNotifier {
     double? amount,
     DateTime? incomeDate,
     String? note,
+    bool? isRecurring,
+    String? recurrenceInterval,
   }) async {
     _errorMessage = null;
 
@@ -132,6 +139,8 @@ class IncomeProvider with ChangeNotifier {
         amount: amount,
         incomeDate: incomeDate,
         note: note,
+        isRecurring: isRecurring,
+        recurrenceInterval: recurrenceInterval,
       );
 
       if (updatedIncome != null) {

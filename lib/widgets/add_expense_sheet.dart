@@ -25,6 +25,10 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
   String? _selectedCategory;
   String _selectedPaymentMethod = PaymentMethod.cash;
   DateTime _selectedDate = DateTime.now();
+  bool _isRecurring = false;
+  String _recurrenceInterval = 'monthly';
+
+  final List<String> _recurrenceOptions = ['daily', 'weekly', 'monthly', 'yearly'];
 
   bool get _isEditing => widget.expense != null;
 
@@ -38,6 +42,8 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
       _selectedCategory = e.category;
       _selectedPaymentMethod = e.paymentMethod;
       _selectedDate = e.expenseDate;
+      _isRecurring = e.isRecurring;
+      _recurrenceInterval = e.recurrenceInterval ?? 'monthly';
     }
   }
 
@@ -86,6 +92,8 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
         note: _noteController.text,
         paymentMethod: _selectedPaymentMethod,
         expenseDate: _selectedDate,
+        isRecurring: _isRecurring,
+        recurrenceInterval: _isRecurring ? _recurrenceInterval : null,
       );
     } else {
       success = await expenseProvider.addExpense(
@@ -94,6 +102,8 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
         note: _noteController.text,
         paymentMethod: _selectedPaymentMethod,
         expenseDate: _selectedDate,
+        isRecurring: _isRecurring,
+        recurrenceInterval: _isRecurring ? _recurrenceInterval : null,
       );
     }
 
@@ -249,6 +259,34 @@ class _AddExpenseSheetState extends State<AddExpenseSheet> {
                 ),
               ),
               const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('Recurring Expense'),
+                subtitle: Text(_isRecurring ? 'Repeats $_recurrenceInterval' : 'One-time expense'),
+                value: _isRecurring,
+                onChanged: (val) => setState(() => _isRecurring = val),
+                secondary: const Icon(FluentIcons.arrow_repeat_all_24_regular),
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (_isRecurring) ...[
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: _recurrenceInterval,
+                  decoration: const InputDecoration(
+                    labelText: 'Repeat Interval',
+                    prefixIcon: Icon(FluentIcons.calendar_clock_24_regular),
+                  ),
+                  items: _recurrenceOptions.map((interval) {
+                    return DropdownMenuItem(
+                      value: interval,
+                      child: Text(interval[0].toUpperCase() + interval.substring(1)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) setState(() => _recurrenceInterval = value);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
               TextFormField(
                 controller: _noteController,
                 maxLines: 3,
