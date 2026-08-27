@@ -191,7 +191,7 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
     // For budgets, createOrUpdateBudget handles both cases
     // typically by upserting based on category/month/year
     final success = await budgetProvider.createOrUpdateBudget(
-      category: _selectedCategory,
+      category: _selectedCategory!,
       limitAmount: double.parse(_limitController.text),
       month: _selectedMonth,
       year: _selectedYear,

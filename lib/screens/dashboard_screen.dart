@@ -26,13 +26,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final PageController _chartController = PageController();
   int _currentChartIndex = 0;
 
-  String _selectedFilter = 'This Month';
+  String _selectedFilter = 'All';
   final List<String> _filterOptions = [
+    'All',
     'This Month',
     'Last 3 Months',
     'Last 6 Months',
-    'All',
+    'Custom Date',
   ];
+  DateTime? _customStartDate;
+  DateTime? _customEndDate;
 
   @override
   void initState() {
@@ -83,6 +86,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else if (filter == 'All') {
       startDate = null;
       endDate = null;
+    } else if (filter == 'Custom Date') {
+      startDate = _customStartDate;
+      endDate = _customEndDate;
     }
 
     final expenseProvider = context.read<ExpenseProvider>();
@@ -333,6 +339,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return DateTime(now.year, now.month + 1, 0).day + 150;
       case 'All':
         return 365;
+      case 'Custom Date':
+        if (_customStartDate != null && _customEndDate != null) {
+          final days = _customEndDate!.difference(_customStartDate!).inDays;
+          return days > 0 ? days : 1;
+        }
+        return 365;
       default:
         return now.day;
     }
@@ -443,13 +455,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         children: _filterOptions.map((filter) {
           final isSelected = filter == _selectedFilter;
+          final displayText = filter == 'Custom Date' && isSelected && _customStartDate != null && _customEndDate != null
+              ? '${DateFormat('MMM d, yyyy').format(_customStartDate!)} - ${DateFormat('MMM d, yyyy').format(_customEndDate!)}'
+              : filter;
+              
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: AnimatedContainer(
               duration: AppAnimations.fast,
               child: ChoiceChip(
                 label: Text(
-                  filter,
+                  displayText,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight:
@@ -468,7 +484,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
                 showCheckmark: false,
-                onSelected: (_) => _applyFilter(filter),
+                onSelected: (_) async {
+                  if (filter == 'Custom Date') {
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                      initialDateRange: _customStartDate != null && _customEndDate != null
+                          ? DateTimeRange(start: _customStartDate!, end: _customEndDate!)
+                          : null,
+                    );
+                    if (picked != null) {
+                      _customStartDate = picked.start;
+                      _customEndDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59);
+                      _applyFilter(filter);
+                    }
+                  } else {
+                    _applyFilter(filter);
+                  }
+                },
               ),
             ),
           );
