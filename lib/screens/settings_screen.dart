@@ -137,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: ListView(
         padding: AppSpacing.paddingLg,
