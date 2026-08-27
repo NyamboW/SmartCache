@@ -3,6 +3,8 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:smartcache/providers/category_provider.dart';
 import 'package:smartcache/theme.dart';
+import 'package:smartcache/constants/cartegories.dart';
+import 'package:smartcache/constants/income_categories.dart';
 
 class ManageCategoriesScreen extends StatefulWidget {
   final bool isExpense;
@@ -66,59 +68,117 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Container(
+            padding: AppSpacing.paddingLg,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                ),
+              ),
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _categoryController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'New Category Name',
-                      prefixIcon: const Icon(FluentIcons.tag_24_regular),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                      ),
+                      hintText: 'e.g. Subscriptions',
+                      prefixIcon: Icon(FluentIcons.tag_24_regular),
                     ),
                     onSubmitted: (_) => _addCategory(),
                   ),
                 ),
-                const SizedBox(width: 16),
-                IconButton.filled(
-                  icon: const Icon(FluentIcons.add_24_regular),
+                const SizedBox(width: AppSpacing.md),
+                ElevatedButton(
                   onPressed: _addCategory,
-                  padding: const EdgeInsets.all(16),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    shape: const CircleBorder(),
+                  ),
+                  child: const Icon(FluentIcons.add_24_regular),
                 ),
               ],
             ),
           ),
-          const Divider(),
           Expanded(
             child: customCategories.isEmpty
                 ? Center(
-                    child: Text(
-                      'No custom categories added.',
-                      style: context.textStyles.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FluentIcons.tag_24_regular,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          'No Custom Categories',
+                          style: context.textStyles.titleLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Add your own categories to track your finances better.',
+                          style: context.textStyles.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   )
-                : ListView.builder(
+                : ListView.separated(
+                    padding: AppSpacing.paddingLg,
                     itemCount: customCategories.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
                     itemBuilder: (context, index) {
                       final category = customCategories[index];
-                      return ListTile(
-                        leading: const Icon(FluentIcons.tag_24_regular),
-                        title: Text(category),
-                        trailing: IconButton(
-                          icon: const Icon(FluentIcons.delete_24_regular, color: Colors.red),
-                          onPressed: () {
-                            if (widget.isExpense) {
-                              provider.removeCustomExpenseCategory(category);
-                            } else {
-                              provider.removeCustomIncomeCategory(category);
-                            }
-                          },
+                      // Use standard icon if defined, otherwise fallback
+                      final iconData = widget.isExpense 
+                          ? ExpenseCategory.getIcon(category) 
+                          : IncomeCategory.getIcon(category);
+                          
+                      return Container(
+                        decoration: AppCardDecoration.surface(context),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md, 
+                            vertical: AppSpacing.xs
+                          ),
+                          leading: Container(
+                            padding: AppSpacing.paddingSm,
+                            decoration: BoxDecoration(
+                              color: CategoryColors.background(category),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                            ),
+                            child: Icon(
+                              iconData,
+                              color: CategoryColors.get(category),
+                              size: 24,
+                            ),
+                          ),
+                          title: Text(
+                            category,
+                            style: context.textStyles.titleMedium,
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              FluentIcons.delete_24_regular, 
+                              color: Theme.of(context).colorScheme.error
+                            ),
+                            onPressed: () {
+                              if (widget.isExpense) {
+                                provider.removeCustomExpenseCategory(category);
+                              } else {
+                                provider.removeCustomIncomeCategory(category);
+                              }
+                            },
+                          ),
                         ),
                       );
                     },

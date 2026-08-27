@@ -363,7 +363,7 @@ ThemeData get lightTheme => ThemeData(
       shadowColor: LightModeColors.lightPrimary.withOpacity(0.3),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadius.xxl),
       ),
       foregroundColor: LightModeColors.lightOnPrimary,
       backgroundColor: LightModeColors.lightPrimary,
@@ -372,7 +372,7 @@ ThemeData get lightTheme => ThemeData(
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
       foregroundColor: LightModeColors.lightPrimary,
       side: const BorderSide(color: LightModeColors.lightBorder),
     ),
@@ -458,7 +458,7 @@ ThemeData get darkTheme => ThemeData(
       shadowColor: DarkModeColors.darkPrimary.withOpacity(0.3),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(AppRadius.xxl),
       ),
       foregroundColor: DarkModeColors.darkOnPrimary,
       backgroundColor: DarkModeColors.darkPrimary,
@@ -467,7 +467,7 @@ ThemeData get darkTheme => ThemeData(
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
       foregroundColor: DarkModeColors.darkPrimary,
       side: const BorderSide(color: DarkModeColors.darkBorder),
     ),

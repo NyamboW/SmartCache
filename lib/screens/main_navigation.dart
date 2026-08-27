@@ -33,13 +33,21 @@ class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
   late final PageController _pageController;
 
-  final List<Widget> _screens = const [
-    DashboardScreen(),
-    ExpensesScreen(),
-    IncomeScreen(),
-    BudgetsScreen(),
-    //ProfileScreen(),
-    SettingsScreen(),
+  late final List<Widget> _screens = [
+    DashboardScreen(
+      onViewAllTransactions: () {
+        setState(() => _currentIndex = 1);
+        _pageController.animateToPage(
+          1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      },
+    ),
+    const ExpensesScreen(),
+    const IncomeScreen(),
+    const BudgetsScreen(),
+    const SettingsScreen(),
   ];
 
   final List<_NavItem> _navItems = const [
@@ -106,14 +114,21 @@ class _MainNavigationState extends State<MainNavigation> {
         },
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        color: Theme.of(context).colorScheme.surface,
-        padding: EdgeInsets.only(
-          left: 8,
-          right: 8,
-          top: 12,
-          bottom: MediaQuery.of(context).padding.bottom + 12,
-        ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(32),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(_navItems.length, (index) {
@@ -183,6 +198,7 @@ class _MainNavigationState extends State<MainNavigation> {
           }),
         ),
       ),
+    ),
     );
   }
 }

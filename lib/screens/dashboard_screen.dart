@@ -16,7 +16,9 @@ import 'package:smartcache/widgets/spending_line_chart.dart';
 
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onViewAllTransactions;
+
+  const DashboardScreen({super.key, this.onViewAllTransactions});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -276,7 +278,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _buildSectionHeader(context, 'Recent Transactions',
                     trailing: recentExpenses.isNotEmpty
                         ? TextButton(
-                            onPressed: () {},
+                            onPressed: widget.onViewAllTransactions,
                             child: const Text('View All'),
                           )
                         : null),
