@@ -17,10 +17,12 @@ class ManageCategoriesScreen extends StatefulWidget {
 
 class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
   final _categoryController = TextEditingController();
+  final _focusNode = FocusNode();
 
   @override
   void dispose() {
     _categoryController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -83,6 +85,7 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                 Expanded(
                   child: TextField(
                     controller: _categoryController,
+                    focusNode: _focusNode,
                     decoration: const InputDecoration(
                       labelText: 'New Category Name',
                       hintText: 'e.g. Subscriptions',
@@ -109,25 +112,34 @@ class _ManageCategoriesScreenState extends State<ManageCategoriesScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          FluentIcons.tag_24_regular,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withOpacity(0.3),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            FluentIcons.tag_24_regular,
+                            size: 56,
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                          ),
                         ),
-                        const SizedBox(height: AppSpacing.md),
+                        const SizedBox(height: 20),
                         Text(
-                          'No Custom Categories',
-                          style: context.textStyles.titleLarge?.copyWith(
+                          widget.isExpense ? 'No Custom Categories' : 'No Custom Income',
+                          style: context.textStyles.titleMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          'Add your own categories to track your finances better.',
-                          style: context.textStyles.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                          textAlign: TextAlign.center,
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: () => _focusNode.requestFocus(),
+                          icon: const Icon(FluentIcons.add_24_regular, size: 18),
+                          label: const Text('Add your first category'),
                         ),
                       ],
                     ),
