@@ -9,6 +9,7 @@ import 'package:smartcache/services/budget_service.dart';
 import 'package:smartcache/services/expense_service.dart';
 import 'package:smartcache/services/income_service.dart';
 import 'package:smartcache/services/export_service.dart';
+import 'package:smartcache/services/import_service.dart';
 import 'package:smartcache/providers/theme_provider.dart';
 import 'package:smartcache/screens/manage_categories_screen.dart';
 
@@ -25,6 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool useDeviceSecurity = false;
   String appVersion = '';
   bool _isExporting = false;
+  bool _isImporting = false;
 
   @override
   void initState() {
@@ -110,6 +112,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         setState(() {
           _isExporting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _importData() async {
+    setState(() {
+      _isImporting = true;
+    });
+
+    try {
+      final importService = ImportService();
+      await importService.importData(context);
+    } catch (e) {
+      if (mounted) {
+        _showMessage('Import failed: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isImporting = false;
         });
       }
     }
@@ -269,25 +292,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             decoration: AppCardDecoration.surface(context),
             clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              leading: Icon(
-                FluentIcons.arrow_download_24_regular,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              title: Text('Export Data to Excel', style: context.textStyles.bodyLarge),
-              subtitle: Text('Backup budgets, income, and expenses', style: context.textStyles.bodySmall),
-              trailing: _isExporting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Icon(
-                      FluentIcons.chevron_right_24_regular,
-                      size: 20,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-              onTap: _isExporting ? null : _exportData,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    FluentIcons.arrow_download_24_regular,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  title: Text('Export Data to Excel', style: context.textStyles.bodyLarge),
+                  subtitle: Text('Backup budgets, income, and expenses', style: context.textStyles.bodySmall),
+                  trailing: _isExporting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Icon(
+                          FluentIcons.chevron_right_24_regular,
+                          size: 20,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                  onTap: _isExporting ? null : _exportData,
+                ),
+                Divider(height: 1, color: theme.dividerColor.withOpacity(0.3)),
+                ListTile(
+                  leading: Icon(
+                    FluentIcons.arrow_upload_24_regular,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  title: Text('Import Data from Excel', style: context.textStyles.bodyLarge),
+                  subtitle: Text('Restore budgets, income, and expenses', style: context.textStyles.bodySmall),
+                  trailing: _isImporting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Icon(
+                          FluentIcons.chevron_right_24_regular,
+                          size: 20,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                  onTap: _isImporting ? null : _importData,
+                ),
+              ],
             ),
           ),
 
