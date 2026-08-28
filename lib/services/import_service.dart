@@ -10,7 +10,7 @@ import 'package:smartcache/services/local_storage_service.dart';
 class ImportService {
   Future<void> importData(BuildContext context) async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['xlsx'],
       );
