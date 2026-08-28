@@ -70,7 +70,12 @@ class BudgetsScreen extends StatelessWidget {
                 ),
               )
             : ListView.builder(
-                padding: AppSpacing.paddingSm,
+                padding: const EdgeInsets.only(
+                  left: AppSpacing.sm,
+                  right: AppSpacing.sm,
+                  top: AppSpacing.sm,
+                  bottom: 80,
+                ),
                 itemCount: budgetProvider.budgets.length,
                 itemBuilder: (context, index) {
                   final budget = budgetProvider.budgets[index];

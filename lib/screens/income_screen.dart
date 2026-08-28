@@ -63,8 +63,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   // ─── Income List ────────────────────────────
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.only(
+                          left: 12, right: 12, top: 8, bottom: 80),
                       itemCount: incomeProvider.filteredIncomes.length,
                       itemBuilder: (context, index) {
                         final income =
