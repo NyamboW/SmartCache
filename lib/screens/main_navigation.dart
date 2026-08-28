@@ -8,6 +8,9 @@ import 'package:smartcache/providers/budget_provider.dart';
 import 'package:smartcache/screens/dashboard_screen.dart';
 import 'package:smartcache/screens/expenses_screen.dart';
 import 'package:smartcache/screens/budgets_screen.dart';
+import 'package:quick_actions/quick_actions.dart';
+import 'package:smartcache/widgets/add_expense_sheet.dart';
+import 'package:smartcache/widgets/add_income_sheet.dart';
 
 
 class _NavItem {
@@ -83,6 +86,45 @@ class _MainNavigationState extends State<MainNavigation> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
     _loadData();
+    _setupQuickActions();
+  }
+
+  void _setupQuickActions() {
+    const QuickActions quickActions = QuickActions();
+    
+    quickActions.initialize((String shortcutType) {
+      // Small delay to ensure the widget is built if launched from cold start
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (!mounted) return;
+        
+        if (shortcutType == 'action_add_expense') {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => const AddExpenseSheet(),
+          );
+        } else if (shortcutType == 'action_add_income') {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => const AddIncomeSheet(),
+          );
+        }
+      });
+    });
+
+    quickActions.setShortcutItems(<ShortcutItem>[
+      const ShortcutItem(
+        type: 'action_add_expense',
+        localizedTitle: 'Add Expense',
+        icon: 'ic_remove',
+      ),
+      const ShortcutItem(
+        type: 'action_add_income',
+        localizedTitle: 'Add Income',
+        icon: 'ic_add',
+      ),
+    ]);
   }
 
   @override
